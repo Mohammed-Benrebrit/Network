@@ -1,0 +1,89 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+{% if user.is_authenticated %}
+<div class="n-post">
+    <div class="c-post">
+        <div class="cc-post">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label id="label" for="text"><b>
+                            <h4>New post</h4>
+                        </b></label>
+                    <textarea class="form-control" placeholder="what's on your mind?" name="po" id="text" cols="10"
+                        rows="4"></textarea>
+                </div>
+                <div class="sp">
+                    <input id="sbt" class="btn btn-primary" type="submit" value="Post">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="post-side">
+    <div class="post-parent">
+        <div>
+            <h3>Home</h3>
+        </div>
+        {% for post in posts %}
+        <input id="pid" type="hidden" name="" value="{{post.id}}">
+        <div id="post">
+            <div id="pun">
+                <a id="a" href="profile/{{post.postfk}}" onclick="document.getElementById('su').submit();">
+                    <h5 id="postuser">{{post.postfk}}</h5>
+                </a>
+            </div>
+            <div id="ptxt">
+                <p id="tx">{{post.text}}</p>
+            </div>
+            <input type="hidden" id="lid" value="{{post.id}}" name="">
+            {% for i in post.likedpost.all %}
+            {% if post.likedpost.all.0.likedpost.id == post.id and request.user == i.userlike %}
+            <input type="hidden" id="l-{{post.id}}" value="liked" name="">
+            {% endif %}
+            {% endfor %}
+            <div style="display: none;" class="btlike" id="dl-{{post.id}}">
+                <button id="like" value="{{post.id}}" class="button liked">
+                    <input type="hidden" id="ch-{{post.id}}" value="t">
+                    <i class="fa fa-heart"></i>
+                    <span id='n-{{post.id}}'>{{post.numoflikes}}</span>
+                </button>
+            </div>
+            <div style="display: none;" class="btlike" id="dd-{{post.id}}">
+                <button id="like" value="{{post.id}}" class="button button-like">
+                    <input type="hidden" id="ch-{{post.id}}" value="f">
+                    <i class="fa fa-heart"></i>
+                    <span id='n-{{post.id}}'>{{post.numoflikes}}</span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+
+                {% if posts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">first</a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link" aria-disabled="true" tabindex="-1"
+                        href="?page={{ posts.previous_page_number }}">previous</a>
+                </li>
+                {% endif %}
+
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+{% endblock %}

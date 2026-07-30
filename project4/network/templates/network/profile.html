@@ -1,0 +1,109 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="pis">
+    <div class="profile-info-side">
+
+        <div id="username">
+            {% for ud in udata %}
+            <h3>{{ud.username}}</h3>
+        </div>
+        <div id="fl">
+            <div class="followers">
+                <h5> Followers:</h5>
+                <h5 id="folw">{{ud.numfollowers}}</h5>
+            </div>
+            <div class="followers">
+                <h5> Following:</h5>
+                <h5 id="folw">{{ud.numfollowers}}</h5>
+            </div>
+        </div>
+
+        <div>
+            {% if ud.id != request.user.id %}
+            <form id="f">
+                {% csrf_token %}
+                {% if check is None%}
+                <input id="usn" type="hidden" value="{{ud.username}}" name="usn">
+                <input id="usn1" type="hidden" value="t" name="check">
+                <input class="btn btn-primary" id="sv" type="submit" value="follow">
+                {% else %}
+                <input id="usn" type="hidden" value="{{ud.username}}" name="usn">
+                <input id="usn1" type="hidden" value="f" name="check">
+                <input class="btn btn-primary" id="sv" type="submit" value="unfollow">
+                {% endif %}
+            </form>
+            {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="post-side">
+    <div class="post-parent">
+        {% for post in posts %}
+        <input id="pid" type="hidden" name="" value="{{post.id}}">
+        <div id="post">
+            <div id="pun">
+                <h5 id="postuser">{{post.postfk}}</h5>
+                {% if post.postfk == request.user %}
+                <div id="ed">
+                    <button value="{{post.id}}" id="bt" class="btn">Edit</button>
+                    <input style="display: none;" class="btn sav" id="sav-{{post.id}}" type="submit" value="save">
+                </div>
+                {% endif %}
+            </div>
+            <div id="ptxt">
+                <p id="tx-{{post.id}}">{{post.text}}</p>
+                <textarea style="display: none;" class="form-control" name="po" id="edt-{{post.id}}"></textarea>
+            </div>
+            <input type="hidden" id="lid" value="{{post.id}}" name="">
+            {% for i in post.likedpost.all %}
+            {% if post.likedpost.all.0.likedpost.id == post.id and request.user == i.userlike %}
+            <input type="hidden" id="l-{{post.id}}" value="liked" name="">
+            {% endif %}
+            {% endfor %}
+            <div style="display: none;" id="dl-{{post.id}}">
+                <button id="like" value="{{post.id}}" class="button liked">
+                    <input type="hidden" id="ch-{{post.id}}" value="t">
+                    <i class="fa fa-heart"></i>
+                    <span id='n-{{post.id}}'>{{post.numoflikes}}</span>
+                </button>
+            </div>
+            <div style="display: none;" id="dd-{{post.id}}">
+                <button id="like" value="{{post.id}}" class="button button-like">
+                    <input type="hidden" id="ch-{{post.id}}" value="f">
+                    <i class="fa fa-heart"></i>
+                    <span id='n-{{post.id}}'>{{post.numoflikes}}</span>
+                </button>
+            </div>
+
+        </div>
+        {% endfor %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+
+                {% if posts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">first</a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link" aria-disabled="true" tabindex="-1"
+                        href="?page={{ posts.previous_page_number }}">previous</a>
+                </li>
+                {% endif %}
+
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% endblock %}
